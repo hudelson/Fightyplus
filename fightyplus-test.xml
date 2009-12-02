@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Fighty" height="500">
+    <Require feature="wave-preview" /> 
+    <Require feature="dynamic-height" />
+    <Require feature="setprefs" />
+    <Require feature="shareable-prefs"/>
+  </ModulePrefs>
+  <UserPref
+  	name="mapId"
+  	default_value="0" />
+  <Content type="html">
+    <![CDATA[
+    
+	<div id="map" style="width: 600px; height: 500px"></div>
+	<div id="buttons">
+	<img src="http://personal.psu.edu/wmh129/fightyplus/images/numbar.jpg" width="427" height="12"></img>	
+	<br/>
+	<input id="button1" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/archer.gif" onClick="addMarker(1)" width="32" height="32"></input>
+	<input id="button2" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/cloak.gif" onClick="addMarker(2)" width="32" height="32"></input>	
+	<input id="button3" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/dwarf.gif" onClick="addMarker(3)" width="32" height="32"></input>
+	<input id="button4" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/redmage.gif" onClick="addMarker(4)" width="32" height="32"></input>	
+	<input id="button5" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/mage.gif" onClick="addMarker(5)" width="32" height="32"></input>	
+	<input id="button6" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/priest.gif" onClick="addMarker(6)" width="32" height="32"></input>
+	<input id="button7" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/warrior.gif" onClick="addMarker(7)" width="32" height="32"></input>		
+	<input id="button8" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/warforged.gif" onClick="addMarker(8)" width="32" height="32"></input>
+	<input id="button9" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/dragon.gif" onClick="addMarker(9)" width="32" height="32"></input>		
+	<input id="button10" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/enemymage.gif" onClick="addMarker(10)" width="32" height="32"></input>		
+	<input id="button11" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/golem.gif" onClick="addMarker(11)" width="32" height="32"></input>		
+	<input id="button12" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/spider.gif" onClick="addMarker(12)" width="32" height="32"></input>
+	<img src="http://personal.psu.edu/wmh129/fightyplus/images/blank.gif" width="66" height="32"></img>
+	<input id="button-1" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/red-dot.png" onClick="addMarker(-1)" width="32" height="32"></input>
+	<input id="button-2" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/blue-dot.png" onClick="addMarker(-2)" width="32" height="32"></input>
+	<input id="button-3" type="image" src="http://personal.psu.edu/wmh129/fightyplus/images/yellow-dot.png" onClick="addMarker(-3)" width="32" height="32"></input>	
+	<br/>
+	<select id="custNo">
+	  <option value="1">1</option>
+	  <option value="2">2</option>
+	  <option value="3">3</option>
+	  <option value="4">4</option>
+	  <option value="5">5</option>	
+	  <option value="6">6</option>
+	  <option value="7">7</option>
+	  <option value="8">8</option>
+	  <option value="9">9</option>
+	  <option value="10">10</option>
+	  <option value="11">11</option>
+	  <option value="12">12</option>	  
+	</select>
+	<input id="yourUrl" size="45" value="Your custom image's URL goes here">
+	<select id="custSize">
+		<option value="0">Select size</option>
+		<option value="0">Medium</option>
+		<option value="1">Large</option>
+		<option value="2">Huge</option>
+		<option value="3">Gargantuan</option>
+		<option value="5">Colossal</option>
+	</select>
+	<button onClick="setCustom()">Set Custom Image</button>
+	<br/>
+	<button onClick="makePoly(1)">Red Polygon</button>
+	<button onClick="makePoly(2)">Blue Polygon</button>
+	<button onClick="makePoly(3)">Yellow Polygon</button>
+  </div>
+
+	<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAE6samu0uRPN3sHFScn98shSydjZChu1zpuZ0Pd9rZtVxsFGpyRSimVgFUV4QrUJmironbYGe9IrZgQ">
+	google.load("maps", "2");
+	</script>
+  <script src="http://www.maplib.net/api/api?v=1.15"  type="text/javascript"></script>
+  <script src="json2.js" type="text/javascript"></script>
+
+  <script type="text/javascript">	
+  var prefs = new gadgets.Prefs();
+  if (prefs.getInt("mapId")!=0){
+  	var maplibid = prefs.getInt("mapId");
+  } else {
+  var maplibid = prompt("Enter MapLib.net map number (or hit cancel to wait)", "xxxx");  
+  	if (maplibid) {prefs.set("mapId",parseInt(maplibid))}
+  	else {
+	  if (prefs.getInt("mapId")!=0){maplibid = prefs.getInt("mapId")}
+	  else maplibid = 6623;
+ 	}
+  }
+  
+  map = new Mmap(maplibid,document.getElementById("map"),null,null,7);
+  map.initMap();
+  gadgets.window.adjustHeight();
+  
+  </script>
+  
+  <script type="text/javascript">
+    GEvent.addListener(map.map, "moveend", handlePan);
+	  GEvent.addListener(map.map, "zoomend", handleZoom);
+    map.map.disableScrollWheelZoom();  	
+    var cltMarkers={};
+	var svrMarkers={};
+	var Polys={};
+	var refPolys={};
+  
+    function init() {
+      if (wave && wave.isInWaveContainer()) {
+        wave.setStateCallback(stateUpdated); 
+        wave.setModeCallback(modeUpdated);
+      }
+    } 
+    
+    function modeUpdated() {
+        
+      var buttonbar = document.getElementById("buttons");
+      if (wave.getMode() == wave.Mode.EDIT) { 
+	  	for (count = 1; count<=12; count++){
+	  	  countst = count.toString();
+		  if(wave.getState().get('custurl'+countst) && wave.getState().get('custurl'+countst) != document.getElementById('button'+countst).src){ document.getElementById('button'+countst).src = wave.getState().get('custurl'+countst)}
+	  	}
+        buttonbar.style.display="block";
+      } else {
+        buttonbar.style.display="none";
+        lastNode();
+      }
+      
+      for (key in cltMarkers) {
+        var kStr = new String(key);
+        if (kStr.match('^mrkr_.*')) {
+          if (wave.getMode() == wave.Mode.EDIT) {
+            var marker = cltMarkers[key]['marker'];
+            marker.enableDragging();
+            GEvent.addListener(marker,"dragend", moveMarker);
+            GEvent.addListener(marker,"click", clickMarker);
+            GEvent.addListener(marker,"infowindowbeforeclose", preCloseMarker);
+          } else {
+            var marker = cltMarkers[key]['marker'];            
+            marker.disableDragging();
+            GEvent.clearInstanceListeners(marker);
+          }
+        }
+      }
+    }
+    
+    function addMarker(styleno) {
+      lastNode();
+      var center = map.map.getCenter();
+      delta = {};
+      var mrkr = {lat:center.lat(),lng:center.lng(),style:styleno};
+      delta['mrkr_'+markeridx]=JSON.stringify(mrkr);
+      markeridx = markeridx + 1
+      delta['markeridx']=markeridx;
+      wave.getState().submitDelta(delta);
+    }
+    
+    function makePoly(polyColor) {
+    	lastNode();
+		polyidx = polyidx + 1;
+		polypt = 0;
+    	GEvent.addListener(map.map,"click",function(overlay,latlng,overlaylatlng) {
+    		if (latlng) {
+				delta={};
+				delta['polyidx']=polyidx;
+				delta['color_'+polyidx]=polyColor;
+		      	var mrkr = {lat:latlng.lat(),lng:latlng.lng(),style:'0',poly:polyidx,color:polyColor};
+		      	delta['mrkr_'+markeridx]=JSON.stringify(mrkr);
+				delta['poly_'+polyidx+'_'+polypt]=markeridx;
+				delta['nodes_'+polyidx]=polypt;
+		      	markeridx = markeridx + 1;
+		      	delta['markeridx']=markeridx;
+		      	if (wave.getState().get('refresh_'+polyidx)){
+			      	delta['refresh_'+polyidx]=wave.getState().get('refresh_'+polyidx)+1;
+				} else {delta['refresh_'+polyidx]=1}
+				wave.getState().submitDelta(delta);
+				polypt = polypt + 1;
+			}
+			if (overlaylatlng) {
+				delta={};
+				delta['polyidx']=polyidx;
+				delta['color_'+polyidx]=polyColor;
+		      	var mrkr = {lat:overlaylatlng.lat(),lng:overlaylatlng.lng(),style:'0',poly:polyidx,color:polyColor};
+		      	delta['mrkr_'+markeridx]=JSON.stringify(mrkr);
+				delta['poly_'+polyidx+'_'+polypt]=markeridx;
+				delta['nodes_'+polyidx]=polypt;
+		      	markeridx = markeridx + 1;
+		      	delta['markeridx']=markeridx;
+		      	if (wave.getState().get('refresh_'+polyidx)){
+			      	delta['refresh_'+polyidx]=wave.getState().get('refresh_'+polyidx)+1;
+				} else {delta['refresh_'+polyidx]=1}
+				wave.getState().submitDelta(delta);
+				polypt = polypt + 1;
+			}
+		});
+    	GEvent.addListener(map.map,"dblclick",lastNode);
+    }
+    
+    function lastNode(){
+    	GEvent.clearListeners(map.map,"click");
+    	GEvent.clearListeners(map.map,"dblclick");
+    }
+    
+    function setCustom() {
+      delta = {};
+      if(document.getElementById('yourUrl').value != "Your custom image's URL goes here" && document.getElementById('yourUrl').value != ""){    
+	      url = document.getElementById('yourUrl').value
+	      delta['custurl'+document.getElementById('custNo').value]=url
+	      document.getElementById('button'+document.getElementById('custNo').value).src = document.getElementById('yourUrl').value;
+      }
+      csize = document.getElementById('custSize').value
+      delta['custsize'+document.getElementById('custNo').value]=csize
+      wave.getState().submitDelta(delta);
+      
+      document.getElementById('yourUrl').value = "Your custom image's URL goes here";     
+    }
+    		
+    function syncMarkers() {
+      // Initialize
+      if (!wave.getState().get('markeridx')) {
+        markeridx = 0 ;
+      } else {
+        markeridx = new Number(wave.getState().get('markeridx')); 
+      }
+
+      if (!wave.getState().get('polyidx')) {
+        polyidx = 0 ;
+      } else {
+        polyidx = new Number(wave.getState().get('polyidx')); 
+      }
+
+      // Seperate marker keys
+      keys = wave.getState().getKeys();
+      svrMarkers = {};
+      for (key in keys) {
+        var kStr = new String(keys[key]);
+        if (kStr.match('^mrkr_.*')) {
+          svrMarkers[keys[key]] = JSON.parse(wave.getState().get(keys[key]));  
+		    }
+      }
+    
+      for (key in svrMarkers) {
+        var kStr = new String(key);
+        if (kStr.match('^mrkr_.*')) {
+          // Create local markers, if needed
+          if (!cltMarkers[key]) {
+            cltMarkers[key] = svrMarkers[key];
+            var mk_ctr = new GLatLng(svrMarkers[key].lat, svrMarkers[key].lng);
+
+            var mk_opt = {};
+      
+// Hopefully
+   			var tinyIcon = new GIcon();
+  			tinyIcon.iconAnchor = new GPoint(15, 15);
+  			
+  			if (parseInt(svrMarkers[key].style)==0){
+				tinyIcon.iconSize = new GSize(10, 10);
+				tinyIcon.iconAnchor = new GPoint(5, 5);
+				tinyIcon.infoWindowAnchor = new GPoint(5, 1);  
+				switch(parseInt(svrMarkers[key].color)) {
+					case 1:
+						tinyIcon.image = "http://personal.psu.edu/wmh129/fightyplus/images/Red.gif";
+						break;
+					case 2:
+						tinyIcon.image = "http://personal.psu.edu/wmh129/fightyplus/images/Blue.gif";
+						break;
+					case 3:
+						tinyIcon.image = "http://personal.psu.edu/wmh129/fightyplus/images/Yellow.gif";
+						break;
+				}
+  			} else if (parseInt(svrMarkers[key].style)<0){
+				tinyIcon.iconSize = new GSize(30, 30);
+				tinyIcon.iconAnchor = new GPoint(15, 30);
+				tinyIcon.infoWindowAnchor = new GPoint(5, 1);  		  		
+  		  		tinyIcon.image = document.getElementById('button'+svrMarkers[key].style.toString()).src;
+  		  	} else {
+	   			if (wave.getState().get('custurl'+svrMarkers[key].style.toString())){
+					tinyIcon.image =wave.getState().get('custurl'+svrMarkers[key].style.toString());
+				} else {
+					tinyIcon.image = document.getElementById('button'+svrMarkers[key].style.toString()).src;				
+				}	
+				if (wave.getState().get('custsize'+svrMarkers[key].style.toString())){
+					isize = 30+30*parseInt(wave.getState().get('custsize'+svrMarkers[key].style.toString()));
+					tinyIcon.iconSize = new GSize(isize,isize);
+					hsize = 15+15*parseInt(wave.getState().get('custsize'+svrMarkers[key].style.toString()));
+					tinyIcon.iconAnchor = new GPoint(hsize, hsize);
+					tinyIcon.infoWindowAnchor = new GPoint(5, 1);
+				} else {
+					tinyIcon.iconSize = new GSize(30, 30);
+					tinyIcon.iconAnchor = new GPoint(15, 15);
+					tinyIcon.infoWindowAnchor = new GPoint(5, 1);
+				}
+			}
+   			
+   			mk_opt = { icon:tinyIcon };            
+            
+            mk_opt['draggable'] = true;  
+            mk_opt['bouncy']=false;          
+            if (cltMarkers[key].label) {
+              mk_opt['title'] = cltMarkers[key].label;
+            } else {
+              mk_opt['title'] = key;
+            }
+            var marker = new GMarker(mk_ctr, mk_opt);
+            marker.disableDragging();
+            if (wave.getMode() == wave.Mode.EDIT) {
+              GEvent.addListener(marker,"dragend", moveMarker);
+              GEvent.addListener(marker,"click", clickMarker);
+              GEvent.addListener(marker,"infowindowbeforeclose", preCloseMarker);
+              marker.enableDragging();
+            }
+            marker['mkrIdx'] = key;
+            cltMarkers[key]['marker'] = marker;
+            map.map.addOverlay(marker);
+          }
+          // Update changed markers 
+          mkrState = svrMarkers[key];
+//          mkrState = JSON.parse(wave.getState().get(key));
+          // Move markers that need moving
+          if ((mkrState.lat != cltMarkers[key].lat) || (mkrState.lng != cltMarkers[key].lng)) {
+            cltMarkers[key].lat = new Number(mkrState.lat);
+            cltMarkers[key].lng = new Number(mkrState.lng);
+            var newCenter = new GLatLng(cltMarkers[key].lat, cltMarkers[key].lng);
+            cltMarkers[key].marker.setLatLng(newCenter);
+          }
+          // Title markers that need a new title
+			 
+          if (mkrState.label != cltMarkers[key].label) {
+            cltMarkers[key].label = mkrState.label;
+            var mk_ctr = new GLatLng(mkrState.lat,mkrState.lng);
+
+            var mk_opt = {};
+            
+// Hopefully
+   			var tinyIcon = new GIcon();
+  			tinyIcon.iconAnchor = new GPoint(15, 15);
+  			
+  			if (parseInt(svrMarkers[key].style)==0){
+				tinyIcon.iconSize = new GSize(10, 10);
+				tinyIcon.iconAnchor = new GPoint(5, 5);
+				tinyIcon.infoWindowAnchor = new GPoint(5, 1);  		  		
+				switch(parseInt(svrMarkers[key].color)) {
+					case 1:
+						tinyIcon.image = "http://personal.psu.edu/wmh129/fightyplus/images/Red.gif";
+						break;
+					case 2:
+						tinyIcon.image = "http://personal.psu.edu/wmh129/fightyplus/images/Blue.gif";
+						break;
+					case 3:
+						tinyIcon.image = "http://personal.psu.edu/wmh129/fightyplus/images/Yellow.gif";
+						break;
+				}
+  			} else if (parseInt(svrMarkers[key].style)<0){
+				tinyIcon.iconSize = new GSize(30, 30);
+				tinyIcon.iconAnchor = new GPoint(15, 30);
+				tinyIcon.infoWindowAnchor = new GPoint(5, 1);  		  		
+  		  		tinyIcon.image = document.getElementById('button'+svrMarkers[key].style.toString()).src;
+  		  	} else {
+	   			if (wave.getState().get('custurl'+svrMarkers[key].style.toString())){
+					tinyIcon.image =wave.getState().get('custurl'+svrMarkers[key].style.toString());
+				} else {
+					tinyIcon.image = document.getElementById('button'+svrMarkers[key].style.toString()).src;				
+				}	
+				if (wave.getState().get('custsize'+svrMarkers[key].style.toString())){
+					isize = 30+30*parseInt(wave.getState().get('custsize'+svrMarkers[key].style.toString()));
+					tinyIcon.iconSize = new GSize(isize,isize);
+					hsize = 15+15*parseInt(wave.getState().get('custsize'+svrMarkers[key].style.toString()));
+					tinyIcon.iconAnchor = new GPoint(hsize, hsize);
+					tinyIcon.infoWindowAnchor = new GPoint(5, 1);
+				} else {
+					tinyIcon.iconSize = new GSize(30, 30);
+					tinyIcon.iconAnchor = new GPoint(15, 15);
+					tinyIcon.infoWindowAnchor = new GPoint(5, 1);
+				}
+			}
+   			
+   			mk_opt = { icon:tinyIcon };            
+            
+            mk_opt['draggable'] = true;
+            mk_opt['title'] = mkrState.label;
+            mk_opt['bouncy']=false;
+            var marker = new GMarker(mk_ctr,mk_opt);
+            marker['mkrIdx'] = key;
+            if (wave.getMode() == wave.Mode.EDIT) {
+              GEvent.addListener(marker,"dragend", moveMarker);
+              GEvent.addListener(marker,"click", clickMarker);
+              GEvent.addListener(marker,"infowindowbeforeclose", preCloseMarker);
+            }
+            if(cltMarkers[key]['marker']) {
+              cltMarkers[key]['marker'].remove();
+              cltMarkers[key]['marker'] = null;
+              cltMarkers[key]['marker'] = marker;
+              map.map.addOverlay(marker);
+            }
+          }
+        }
+      }
+      
+      for (polyc = 1; polyc<=polyidx;polyc++) {
+     	if (wave.getState().get('nodes_'+polyc)>=0 && wave.getState().get('refresh_'+polyc)!=refPolys[polyc]) {
+     		if (Polys[polyc]){
+     			Polys[polyc].remove();
+     			Polys[polyc]=null;
+     		}
+			var glatlongs = [
+		  	];
+			switch(parseInt(wave.getState().get('color_'+polyc))) {
+				case 1:
+					Polys[polyc] = new GPolygon(glatlongs, "#990000", 5, 1, "#ff0000", 0.2);
+					break;			
+				case 2:
+					Polys[polyc] = new GPolygon(glatlongs, "#000099", 5, 1, "#0000ff", 0.2);
+					break;			
+				case 3:
+					Polys[polyc] = new GPolygon(glatlongs, "#cccc66", 5, 1, "#ffff99", 0.2);
+					break;			
+			}
+		  	map.map.addOverlay(Polys[polyc]);
+		  	
+			lastvertex = null;
+			for(count=0;count<=wave.getState().get('nodes_'+polyc);count++){
+			  var addind = wave.getState().get('poly_'+polyc+'_'+count);
+			  if(svrMarkers['mrkr_'+addind]){
+	     		  var addpt = svrMarkers['mrkr_'+addind];
+				  var addlat = new Number(addpt.lat);
+				  var addlon = new Number(addpt.lng);
+				  var newpt = new GLatLng(addlat,addlon);
+				  Polys[polyc].insertVertex(0,newpt);
+				  
+				  if(!lastvertex) lastvertex = newpt;				  
+			  }
+			}
+			
+			if (lastvertex) Polys[polyc].insertVertex(0,lastvertex);
+
+		refPolys[polyc]=wave.getState().get('refresh_'+polyc);
+     	}
+     	
+     }
+
+      
+      // Clean up local markers       
+      for (key in cltMarkers) {
+        var kStr = new String(key);
+        if (kStr.match('^mrkr_.*')) {
+          if (!svrMarkers[key]) {
+            if (cltMarkers[key]['marker']) {
+              cltMarkers[key]['marker'].closeInfoWindow();
+              cltMarkers[key]['marker'].remove();        
+              delete cltMarkers[key];
+
+            }
+          }
+        }
+      }
+    }
+
+    function moveMarker() {
+	    var key = this['mkrIdx'];
+	    
+	    cltMarkers[key]['lat']=this.getLatLng().lat();
+	    cltMarkers[key]['lng']=this.getLatLng().lng();
+	    var delta = {};
+	    var markerKey = {}
+	    markerKey['lat'] = cltMarkers[key].lat;
+	    markerKey['lng'] = cltMarkers[key].lng;
+	    markerKey['label'] = cltMarkers[key].label;
+	    markerKey['style']= cltMarkers[key].style;
+	    markerKey['poly']= cltMarkers[key].poly;
+	    markerKey['color']= cltMarkers[key].color;
+	    delta[key]=JSON.stringify(markerKey);
+
+	    if (svrMarkers[key]['poly']) { 
+      		if (wave.getState().get('refresh_'+svrMarkers[key]['poly'])){
+				delta['refresh_'+svrMarkers[key]['poly']]=wave.getState().get('refresh_'+svrMarkers[key]['poly'])+1;
+			} else {delta['refresh_'+svrMarkers[key]['poly']]=1}
+	  	}
+
+	    wave.getState().submitDelta(delta);
+    }
+		
+	  function clickMarker() {
+	    map.map.closeInfoWindow();
+	    this.openInfoWindowHtml("Label: <input value='" + this.getTitle().replace(/'/g, "&#39") +"' id='ttl_"+this['mkrIdx']+"' type='text' /> </br><a onClick=removeMarker('" + this['mkrIdx'] + "')>(x)</a>");
+	  }
+
+    function setLabel(markerIdx, label) {		  
+      //var mrkr_record = JSON.parse(wave.getState().get(markerIndex));
+	    //var mrkr_record=cltMarkers[markerIdx];
+      var delta = {};
+      var new_mrkr_record = JSON.parse(wave.getState().get(markerIdx));
+      new_mrkr_record['label'] = String(label);
+      delta[markerIdx] = JSON.stringify(new_mrkr_record);
+      wave.getState().submitDelta(delta);
+    }
+
+    function removeMarker(markerIndex) {
+      map.map.closeInfoWindow();
+      
+      
+	  delta = {};
+
+      if (svrMarkers[markerIndex]['poly']) { 
+      	if (wave.getState().get('refresh_'+svrMarkers[markerIndex]['poly'])){
+			delta['refresh_'+svrMarkers[markerIndex]['poly']]=wave.getState().get('refresh_'+svrMarkers[markerIndex]['poly'])+1;
+		} else {delta['refresh_'+svrMarkers[markerIndex]['poly']]=1}
+	  }
+
+      delta[markerIndex] = null;
+      wave.getState().submitDelta(delta);                 
+    }
+    
+    function preCloseMarker() {
+      var label = document.getElementById("ttl_"+this['mkrIdx']).value;
+      setLabel(this['mkrIdx'], label);
+    }
+	
+	  function stateUpdated(state) {	  	  
+	      setTimeout(syncZoom,0);
+	      setTimeout(syncPan,0);
+	      setTimeout(syncMarkers,0);
+	  }
+
+	  function handleZoom(oldzoom,newzoom) {
+      var delta = {};
+      delta['zoomlevel']=JSON.stringify(newzoom);
+      if (wave.getMode() == wave.Mode.EDIT) {
+        wave.getState().submitDelta(delta);
+      }
+	  }
+	
+    function handlePan() {
+      var delta = {};
+      center=map.map.getCenter();
+      centerPoint = [center.lat(),center.lng()]
+      delta['mapcenter']=JSON.stringify(centerPoint);
+      if (wave.getMode() == wave.Mode.EDIT) {
+        wave.getState().submitDelta(delta);
+      }
+    }
+
+    function syncZoom() {
+      var newZoom = JSON.parse(wave.getState().get('zoomlevel'));
+      var oldZoom = map.map.getZoom();
+      if (oldZoom != newZoom) {
+        if (wave.getMode() != wave.Mode.EDIT) {
+          map.map.setZoom(newZoom);
+        }
+      }
+    }
+
+    function syncPan() {        
+      var oCenter = map.map.getCenter();
+      var newCenter = JSON.parse(wave.getState().get('mapcenter'));
+      var gCenter = new GLatLng(newCenter[0],newCenter[1]);
+      if (JSON.stringify(oCenter) != JSON.stringify(gCenter)) {
+        if (wave.getMode() != wave.Mode.EDIT) {
+          map.map.setCenter(gCenter);
+        }
+      }
+    }
+	
+	  gadgets.util.registerOnLoadHandler(init);
+	
+	</script>
+	
+	
+    ]]>
+  </Content>
+</Module>

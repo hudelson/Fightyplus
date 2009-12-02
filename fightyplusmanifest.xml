@@ -1,0 +1,10 @@
+<extension 
+    name="Fighty+"
+    thumbnailUrl="http://personal.psu.edu/wmh129/fightyplus/images/screenshot.png"
+    description="Use customizable sprites, markers, and MapLib.net maps to manage all of your roleplaying battlegrid needs (based on Fighty by Dan Clery)."> 
+  <author name="Phil Hudelson"/> 
+  <menuHook location="toolbar" text="Add Fighty+ Battlemap"
+      iconUrl="http://personal.psu.edu/wmh129/fightyplus/images/installericon.png"> 
+    <insertGadget url="http://personal.psu.edu/wmh129/fightyplus/fightyplus.xml"/> 
+  </menuHook> 
+</extension>
